@@ -1,0 +1,46 @@
+{
+  "name": "eslint-plugin-no-ignore-returned-union ",
+  "version": "0.1.0",
+  "description": "ESLint rule to prohibit ignoring union values returned by a function.",
+  "main": "lib/index.js",
+  "files": [
+    "lib/*.js",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node ./lib/index.test.js",
+    "test:watch": "node --watch ./lib/index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igrep/eslint-plugin-no-ignore-return.git"
+  },
+  "keywords": [
+    "eslint"
+  ],
+  "author": "YAMAMOTO Yuji",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/igrep/eslint-plugin-no-ignore-return/issues"
+  },
+  "homepage": "https://github.com/igrep/eslint-plugin-no-ignore-return#readme",
+  "devDependencies": {
+    "@types/eslint": "^8.4.6",
+    "@types/node": "^18.11.2",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "@typescript-eslint/utils": "^5.40.1",
+    "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "eslint": "^8.25.0"
+  }
+}
