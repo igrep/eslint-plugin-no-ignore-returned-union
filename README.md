@@ -1,3 +1,3 @@
 # eslint-plugin
 
-ESLint rule to prohibit ignoring union values returned by a function.
+ESLint rule to prohibit ignoring a union value returned by a function.
