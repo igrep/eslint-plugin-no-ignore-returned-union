@@ -28,7 +28,7 @@ const rule: TSESLint.RuleModule<string, Options> = {
     },
 
     docs: {
-      description: "Prohibit ignoring a return value of a function",
+      description: "Prohibit ignoring a union value returned by a function",
       recommended: "error",
       url: "https://github.com/igrep/eslint-plugin-no-ignore-return",
     },
