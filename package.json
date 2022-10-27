@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "test": "node ./lib/index.test.js",
-    "test:watch": "node --watch ./lib/index.test.js"
+    "test:watch": "node --watch ./lib/index.test.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
