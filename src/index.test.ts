@@ -17,7 +17,7 @@
 import * as path from "path";
 import { ESLintUtils } from "@typescript-eslint/utils";
 
-import * as rule from "./";
+import { rules } from "./";
 
 const ruleTester = new ESLintUtils.RuleTester({
   parser: "@typescript-eslint/parser",
@@ -31,7 +31,7 @@ const filename = `${__dirname}/../src/assets/file.ts`;
 
 ruleTester.run(
   "Prohibit ignoring a return value of a function unless predefined",
-  rule,
+  rules["no-ignore-returned-union"],
   {
     valid: [
       {
