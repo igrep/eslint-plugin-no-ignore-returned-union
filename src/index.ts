@@ -27,7 +27,7 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
 
       messages: {
         returnValueMustBeUsed:
-        'The return value of "{{functionName}}" must be used.',
+          'The return value of "{{functionName}}" must be used.',
       },
 
       docs: {
@@ -59,10 +59,9 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
       return {
         CallExpression: (node: TSESTree.CallExpression) => {
           const { parent, callee } = node;
-          const typeChecker = services.program.getTypeChecker();
-          const typ = typeChecker.getTypeAtLocation(
-            services.esTreeNodeToTSNodeMap.get(node),
-          );
+          const typ = services.program
+            .getTypeChecker()
+            .getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
 
           const functionName = resolveFunctionName(callee, context);
           if (typ.isUnion() && parent?.type === "ExpressionStatement") {
