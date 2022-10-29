@@ -53,6 +53,9 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
     defaultOptions: [{ exceptions: [] }],
     create(context: TSESLint.RuleContext<string, Options>) {
       if (!context.parserServices?.hasFullTypeInformation) {
+        console.warn(
+          "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
+        );
         return {};
       }
       const services = context.parserServices;
