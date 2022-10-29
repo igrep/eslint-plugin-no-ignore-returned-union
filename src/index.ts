@@ -64,8 +64,7 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
             services.esTreeNodeToTSNodeMap.get(node),
           );
 
-          const functionName =
-            callee.type === "Identifier" ? callee.name : "<function>";
+          const functionName = resolveFunctionName(callee, context);
           if (typ.isUnion() && parent?.type === "ExpressionStatement") {
             context.report({
               messageId: "returnValueMustBeUsed",
@@ -76,5 +75,18 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
         },
       };
     },
-  }
+  },
 };
+function resolveFunctionName(
+  callee: TSESTree.LeftHandSideExpression,
+  context: TSESLint.RuleContext<string, Options>,
+): string {
+  switch (callee.type) {
+    case "Identifier":
+      return callee.name;
+    case "MemberExpression":
+      return context.getSourceCode().getText(callee.property);
+    default:
+      return "<function>";
+  }
+}

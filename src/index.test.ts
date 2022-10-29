@@ -75,6 +75,13 @@ ruleTester.run(
                [notIgnored()];
               `,
       },
+      {
+        filename,
+        code: `type Type = number | undefined;
+               const o = { ignored(): Type {} }
+               const a = o.ignored();
+              `,
+      },
     ],
     invalid: [
       {
@@ -86,6 +93,20 @@ ruleTester.run(
         errors: [
           {
             messageId: "returnValueMustBeUsed",
+            data: { functionName: 'ignored' },
+          },
+        ],
+      },
+      {
+        filename,
+        code: `type Type = number | undefined;
+               const o = { ignored(): Type {} }
+               o.ignored();
+              `,
+        errors: [
+          {
+            messageId: "returnValueMustBeUsed",
+            data: { functionName: 'ignored' },
           },
         ],
       },
