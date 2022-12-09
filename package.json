@@ -4,7 +4,8 @@
   "description": "ESLint rule to prohibit ignoring a union value returned by a function.",
   "main": "lib/index.js",
   "files": [
-    "lib/*.js",
+    "lib/index.js",
+    "src/index.ts",
     "README.md"
   ],
   "scripts": {
