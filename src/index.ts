@@ -16,11 +16,9 @@
 
 import type { TSESTree, TSESLint } from "@typescript-eslint/utils";
 
-type Options = [{ exceptions: string[] }];
-
 const ruleName = "no-ignore-returned-union";
 
-export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
+export const rules: { [ruleName]: TSESLint.RuleModule<string, unknown[]> } = {
   [ruleName]: {
     meta: {
       type: "problem",
@@ -35,23 +33,10 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
         recommended: "error",
         url: "https://github.com/igrep/eslint-plugin-no-ignore-return",
       },
-      schema: [
-        {
-          type: "object",
-          properties: {
-            exceptions: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
-          },
-          additionalProperties: false,
-        },
-      ],
+      schema: [],
     },
-    defaultOptions: [{ exceptions: [] }],
-    create(context: TSESLint.RuleContext<string, Options>) {
+    defaultOptions: [],
+    create(context: TSESLint.RuleContext<string, unknown[]>) {
       if (!context.parserServices?.hasFullTypeInformation) {
         console.warn(
           "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
@@ -81,7 +66,7 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, Options> } = {
 };
 function resolveFunctionName(
   callee: TSESTree.LeftHandSideExpression,
-  context: TSESLint.RuleContext<string, Options>,
+  context: TSESLint.RuleContext<string, unknown[]>,
 ): string {
   switch (callee.type) {
     case "Identifier":
