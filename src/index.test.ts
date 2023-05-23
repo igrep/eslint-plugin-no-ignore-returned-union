@@ -123,7 +123,6 @@ ruleTester.run(
                [await notIgnored()];
               `,
       },
->>>>>>> 2d4ad4f (Detect when a returned union value of the async function is ignored)
     ],
     invalid: [
       {
