@@ -30,7 +30,7 @@ const ruleTester = new ESLintUtils.RuleTester({
 const filename = `${__dirname}/../src/assets/file.ts`;
 
 ruleTester.run(
-  "Prohibit ignoring a return value of a function unless predefined",
+  "Prohibit ignoring a return value of a function",
   rules["no-ignore-returned-union"],
   {
     valid: [
@@ -82,6 +82,48 @@ ruleTester.run(
                const a = o.ignored();
               `,
       },
+      {
+        filename,
+        code: `export function ignored(): Promise<void> {}
+               await ignored();
+              `,
+      },
+      {
+        filename,
+        code: `export function ignored(): Promise<number> { Promise.resolve(0); }
+               await ignored();
+              `,
+      },
+      {
+        filename,
+        code: `export function notIgnored(): Promise<number> { Promise.resolve(0); }
+               const a = await notIgnored();
+              `,
+      },
+      {
+        filename,
+        code: `export function notIgnored(): Promise<number> { Promise.resolve(0); }
+               function otherFunction(a: number | undefined): void {}
+               otherFunction(await notIgnored());
+              `,
+      },
+      {
+        filename,
+        code: `type Type = number | undefined;
+               export function notIgnored(): Promise<Type> {}
+               const a = await notIgnored();
+              `,
+      },
+      {
+        filename,
+        code: `type Type = number | undefined;
+               export function notIgnored(): Promise<Type> {}
+               function otherFunction(a: number | undefined): void {}
+               otherFunction(await notIgnored());
+               [await notIgnored()];
+              `,
+      },
+>>>>>>> 2d4ad4f (Detect when a returned union value of the async function is ignored)
     ],
     invalid: [
       {
@@ -107,6 +149,18 @@ ruleTester.run(
           {
             messageId: "returnValueMustBeUsed",
             data: { functionName: 'ignored' },
+          },
+        ],
+      },
+      {
+        filename,
+        code: `type Type = Promise<number | undefined>;
+               export function ignored(): Type {}
+               await ignored();
+              `,
+        errors: [
+          {
+            messageId: "returnValueMustBeUsed",
           },
         ],
       },

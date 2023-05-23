@@ -14,7 +14,10 @@
    limitations under the License.
  */
 
+import * as path from 'path';
+
 import type { TSESTree, TSESLint } from "@typescript-eslint/utils";
+import { Type, TypeReference } from "typescript";
 
 const ruleName = "no-ignore-returned-union";
 
@@ -47,9 +50,10 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, unknown[]> } = {
       return {
         CallExpression: (node: TSESTree.CallExpression) => {
           const { parent, callee } = node;
-          const typ = services.program
-            .getTypeChecker()
-            .getTypeAtLocation(services.esTreeNodeToTSNodeMap.get(node));
+          const typeChecker = services.program.getTypeChecker();
+          const typ = typeChecker.getTypeAtLocation(
+            services.esTreeNodeToTSNodeMap.get(node)
+          );
 
           const functionName = resolveFunctionName(callee, context);
           if (typ.isUnion() && parent?.type === "ExpressionStatement") {
@@ -58,12 +62,23 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, unknown[]> } = {
               node,
               data: { functionName },
             });
+        } else if (isPromise(typ) && parent?.type === "AwaitExpression") {
+          const { parent: parent2 } = parent;
+          const [typArg] = typeChecker.getTypeArguments(typ as TypeReference);
+          if (typArg?.isUnion() && parent2?.type === "ExpressionStatement") {
+            context.report({
+              messageId: "returnValueMustBeUsed",
+              node,
+              data: { functionName },
+            });
           }
+        }
         },
       };
     },
   },
 };
+
 function resolveFunctionName(
   callee: TSESTree.LeftHandSideExpression,
   context: TSESLint.RuleContext<string, unknown[]>,
@@ -76,4 +91,23 @@ function resolveFunctionName(
     default:
       return "<function>";
   }
+}
+
+function isPromise(typ: Type): boolean {
+  const sym = typ.getSymbol();
+  if (!sym) {
+    return false;
+  }
+  if (sym.getName() !== "Promise") {
+    return false;
+  }
+  const p = sym.getDeclarations()?.[0]?.getSourceFile()?.fileName;
+  if (!p) {
+    return false;
+  }
+  if (path.basename(p) !== "lib.es5.d.ts") {
+    return false;
+  }
+
+  return true;
 }
