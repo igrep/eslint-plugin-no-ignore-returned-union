@@ -17,51 +17,53 @@
 import * as path from 'path';
 
 import type { TSESTree, TSESLint } from "@typescript-eslint/utils";
+import { ESLintUtils } from "@typescript-eslint/utils";
 import { Type, TypeReference } from "typescript";
 
-const ruleName = "no-ignore-returned-union";
+const createRule = ESLintUtils.RuleCreator(
+  () => "https://github.com/igrep/eslint-plugin-no-ignore-returned-union"
+);
 
-export const rules: { [ruleName]: TSESLint.RuleModule<string, unknown[]> } = {
-  [ruleName]: {
-    meta: {
-      type: "problem",
+export const rule = createRule({
+  name: "no-ignore-returned-union",
+  meta: {
+    type: "problem",
 
-      messages: {
-        returnValueMustBeUsed:
-          'The return value of "{{functionName}}" must be used.',
-      },
-
-      docs: {
-        description: "Prohibit ignoring a union value returned by a function",
-        recommended: "error",
-        url: "https://github.com/igrep/eslint-plugin-no-ignore-return",
-      },
-      schema: [],
+    messages: {
+      returnValueMustBeUsed:
+      'The return value of "{{functionName}}" must be used.',
     },
-    defaultOptions: [],
-    create(context: TSESLint.RuleContext<string, unknown[]>) {
-      if (!context.parserServices?.hasFullTypeInformation) {
-        console.warn(
-          "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
-        );
-        return {};
-      }
-      const services = context.parserServices;
-      return {
-        CallExpression: (node: TSESTree.CallExpression) => {
-          const { parent, callee } = node;
-          const typeChecker = services.program.getTypeChecker();
-          const typ = typeChecker.getTypeAtLocation(
-            services.esTreeNodeToTSNodeMap.get(node)
-          );
 
-          const functionName = resolveFunctionName(callee, context);
-          if (typ.isUnion() && parent?.type === "ExpressionStatement") {
-            context.report({
-              messageId: "returnValueMustBeUsed",
-              node,
-              data: { functionName },
-            });
+    docs: {
+      description: "Prohibit ignoring a union value returned by a function",
+      requiresTypeChecking: true,
+    },
+    schema: [],
+  },
+  defaultOptions: [],
+  create(context: TSESLint.RuleContext<string, unknown[]>) {
+    const services = ESLintUtils.getParserServices(context);
+    if (services.program == null) {
+      console.warn(
+        "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
+      );
+      return {};
+    }
+    return {
+      CallExpression: (node: TSESTree.CallExpression) => {
+        const { parent, callee } = node;
+        const typeChecker = services.program.getTypeChecker();
+        const typ = typeChecker.getTypeAtLocation(
+          services.esTreeNodeToTSNodeMap.get(node)
+        );
+
+        const functionName = resolveFunctionName(callee, context.sourceCode);
+        if (typ.isUnion() && parent?.type === "ExpressionStatement") {
+          context.report({
+            messageId: "returnValueMustBeUsed",
+            node,
+            data: { functionName },
+          });
         } else if (isPromise(typ) && parent?.type === "AwaitExpression") {
           const { parent: parent2 } = parent;
           const [typArg] = typeChecker.getTypeArguments(typ as TypeReference);
@@ -73,21 +75,21 @@ export const rules: { [ruleName]: TSESLint.RuleModule<string, unknown[]> } = {
             });
           }
         }
-        },
-      };
-    },
+      },
+    };
   },
-};
+});
+
 
 function resolveFunctionName(
   callee: TSESTree.LeftHandSideExpression,
-  context: TSESLint.RuleContext<string, unknown[]>,
+  sourceCode: TSESLint.SourceCode,
 ): string {
   switch (callee.type) {
     case "Identifier":
       return callee.name;
     case "MemberExpression":
-      return context.getSourceCode().getText(callee.property);
+      return sourceCode.getText(callee.property);
     default:
       return "<function>";
   }
