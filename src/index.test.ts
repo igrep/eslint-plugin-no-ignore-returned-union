@@ -15,23 +15,30 @@
 */
 
 import * as path from "path";
-import { ESLintUtils } from "@typescript-eslint/utils";
+import * as vitest from 'vitest';
+import { RuleTester } from "@typescript-eslint/rule-tester";
 
-import { rules } from "./";
+import { rule } from "./index.js";
 
-const ruleTester = new ESLintUtils.RuleTester({
+RuleTester.afterAll = vitest.afterAll;
+RuleTester.it = vitest.it;
+RuleTester.itOnly = vitest.it.only;
+RuleTester.describe = vitest.describe;
+
+const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
-    project: path.resolve(`${__dirname}/../tsconfig.json`),
+    project: `../tsconfig.json`,
+    tsconfigRootDir: path.resolve(`${__dirname}/`),
   },
 });
 const filename = `${__dirname}/../src/assets/file.ts`;
 
 ruleTester.run(
   "Prohibit ignoring a return value of a function",
-  rules["no-ignore-returned-union"],
+  rule,
   {
     valid: [
       {
