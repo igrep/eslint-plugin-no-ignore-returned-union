@@ -18,7 +18,7 @@ import * as path from "path";
 import * as vitest from 'vitest';
 import { RuleTester } from "@typescript-eslint/rule-tester";
 
-import { rule } from "./index.js";
+import rule from "./index.js";
 
 RuleTester.afterAll = vitest.afterAll;
 RuleTester.it = vitest.it;

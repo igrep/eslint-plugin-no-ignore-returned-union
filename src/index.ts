@@ -24,7 +24,7 @@ const createRule = ESLintUtils.RuleCreator(
   () => "https://github.com/igrep/eslint-plugin-no-ignore-returned-union"
 );
 
-export const rule = createRule({
+export default createRule({
   name: "no-ignore-returned-union",
   meta: {
     type: "problem",
