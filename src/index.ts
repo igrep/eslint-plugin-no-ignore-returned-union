@@ -24,62 +24,71 @@ const createRule = ESLintUtils.RuleCreator(
   () => "https://github.com/igrep/eslint-plugin-no-ignore-returned-union"
 );
 
-export default createRule({
-  name: "no-ignore-returned-union",
+const version = require("../package.json").version;
+
+export default {
   meta: {
-    type: "problem",
-
-    messages: {
-      returnValueMustBeUsed:
-      'The return value of "{{functionName}}" must be used.',
-    },
-
-    docs: {
-      description: "Prohibit ignoring a union value returned by a function",
-      requiresTypeChecking: true,
-    },
-    schema: [],
+    name: "eslint-plugin-no-ignore-returned-union",
+    version,
   },
-  defaultOptions: [],
-  create(context: TSESLint.RuleContext<string, unknown[]>) {
-    const services = ESLintUtils.getParserServices(context);
-    if (services.program == null) {
-      console.warn(
-        "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
-      );
-      return {};
-    }
-    return {
-      CallExpression: (node: TSESTree.CallExpression) => {
-        const { parent, callee } = node;
-        const typeChecker = services.program.getTypeChecker();
-        const typ = typeChecker.getTypeAtLocation(
-          services.esTreeNodeToTSNodeMap.get(node)
-        );
+  rules: {
+    "no-ignore-returned-union": createRule({
+      name: "no-ignore-returned-union",
+      meta: {
+        type: "problem",
 
-        const functionName = resolveFunctionName(callee, context.sourceCode);
-        if (typ.isUnion() && parent?.type === "ExpressionStatement") {
-          context.report({
-            messageId: "returnValueMustBeUsed",
-            node,
-            data: { functionName },
-          });
-        } else if (isPromise(typ) && parent?.type === "AwaitExpression") {
-          const { parent: parent2 } = parent;
-          const [typArg] = typeChecker.getTypeArguments(typ as TypeReference);
-          if (typArg?.isUnion() && parent2?.type === "ExpressionStatement") {
-            context.report({
-              messageId: "returnValueMustBeUsed",
-              node,
-              data: { functionName },
-            });
-          }
-        }
+        messages: {
+          returnValueMustBeUsed:
+          'The return value of "{{functionName}}" must be used.',
+        },
+
+        docs: {
+          description: "Prohibit ignoring a union value returned by a function",
+          requiresTypeChecking: true,
+        },
+        schema: [],
       },
-    };
-  },
-});
+      defaultOptions: [],
+      create(context: TSESLint.RuleContext<string, unknown[]>) {
+        const services = ESLintUtils.getParserServices(context);
+        if (services.program == null) {
+          console.warn(
+            "eslint-plugin-no-ignore-returned-union: Type checker disabled. See the document of the @typescript-eslint/eslint-plugin package.",
+          );
+          return {};
+        }
+        return {
+          CallExpression: (node: TSESTree.CallExpression) => {
+            const { parent, callee } = node;
+            const typeChecker = services.program.getTypeChecker();
+            const typ = typeChecker.getTypeAtLocation(
+              services.esTreeNodeToTSNodeMap.get(node)
+            );
 
+            const functionName = resolveFunctionName(callee, context.sourceCode);
+            if (typ.isUnion() && parent?.type === "ExpressionStatement") {
+              context.report({
+                messageId: "returnValueMustBeUsed",
+                node,
+                data: { functionName },
+              });
+            } else if (isPromise(typ) && parent?.type === "AwaitExpression") {
+              const { parent: parent2 } = parent;
+              const [typArg] = typeChecker.getTypeArguments(typ as TypeReference);
+              if (typArg?.isUnion() && parent2?.type === "ExpressionStatement") {
+                context.report({
+                  messageId: "returnValueMustBeUsed",
+                  node,
+                  data: { functionName },
+                });
+              }
+            }
+          },
+        };
+      },
+    }),
+  },
+};
 
 function resolveFunctionName(
   callee: TSESTree.LeftHandSideExpression,

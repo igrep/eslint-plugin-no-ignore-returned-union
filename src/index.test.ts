@@ -18,7 +18,7 @@ import * as path from "path";
 import * as vitest from 'vitest';
 import { RuleTester } from "@typescript-eslint/rule-tester";
 
-import rule from "./index.js";
+import subject from "./index.js";
 
 RuleTester.afterAll = vitest.afterAll;
 RuleTester.it = vitest.it;
@@ -38,7 +38,7 @@ const filename = `${__dirname}/../src/assets/file.ts`;
 
 ruleTester.run(
   "Prohibit ignoring a return value of a function",
-  rule,
+  subject.rules["no-ignore-returned-union"],
   {
     valid: [
       {
