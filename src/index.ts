@@ -14,7 +14,8 @@
    limitations under the License.
  */
 
-import * as path from 'path';
+import * as path from "node:path";
+import { createRequire } from "node:module";
 
 import type { TSESTree, TSESLint } from "@typescript-eslint/utils";
 import { ESLintUtils } from "@typescript-eslint/utils";
@@ -24,6 +25,7 @@ const createRule = ESLintUtils.RuleCreator(
   () => "https://github.com/igrep/eslint-plugin-no-ignore-returned-union"
 );
 
+const require = createRequire(import.meta.url);
 const version = require("../package.json").version;
 
 export default {
