@@ -26,12 +26,15 @@ RuleTester.itOnly = vitest.it.only;
 RuleTester.describe = vitest.describe;
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
+  languageOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
-    project: `../tsconfig.json`,
-    tsconfigRootDir: path.resolve(`${__dirname}/`),
+    parserOptions: {
+      projectService: {
+        allowDefaultProject: ['*.ts*'],
+      },
+      tsconfigRootDir: path.resolve(`${__dirname}/`),
+    },
   },
 });
 const filename = `${__dirname}/../src/assets/file.ts`;

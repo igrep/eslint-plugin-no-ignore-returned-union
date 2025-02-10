@@ -46,7 +46,6 @@ export default {
 
         docs: {
           description: "Prohibit ignoring a union value returned by a function",
-          requiresTypeChecking: true,
         },
         schema: [],
       },
@@ -93,7 +92,7 @@ export default {
 };
 
 function resolveFunctionName(
-  callee: TSESTree.LeftHandSideExpression,
+  callee: TSESTree.Expression,
   sourceCode: TSESLint.SourceCode,
 ): string {
   switch (callee.type) {
