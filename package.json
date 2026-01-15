@@ -1,6 +1,6 @@
 {
-  "name": "eslint-plugin-no-ignore-returned-union ",
-  "version": "0.6.1",
+  "name": "eslint-plugin-no-ignore-returned-union",
+  "version": "0.6.3",
   "description": "ESLint rule to prohibit ignoring a union value returned by a function.",
   "type": "module",
   "main": "lib/index.js",
